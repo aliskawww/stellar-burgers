@@ -1,68 +1,52 @@
 import { Preloader, OrderInfoUI } from '@ui';
-import { useMemo } from 'react';
-
-import type { TIngredient } from '@utils-types';
+import { useEffect, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
+import { fetchOrder } from '@slices/ordersSlice';
+import { selectIngredients } from '@selectors';
+import { useDispatch, useSelector } from '../../services/store';
+import { buildOrderInfo } from '../../utils/order-info';
+import { IngredientsBoundary } from '../ingredients-boundary/ingredients-boundary';
+import { RequestError } from '../request-error/request-error';
 
 export const OrderInfo = (): React.JSX.Element => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0,
-  };
+  const { number: param } = useParams<{ number: string }>();
+  const number = Number(param);
+  const valid = /^\d+$/.test(param ?? '') && Number.isSafeInteger(number) && number > 0;
+  const dispatch = useDispatch();
+  const detail = useSelector((state) => state.orders.detail);
+  const ingredients = useSelector(selectIngredients);
 
-  const ingredients: TIngredient[] = [];
+  useEffect(() => {
+    if (valid) void dispatch(fetchOrder(number));
+  }, [dispatch, number, valid]);
 
-  /**
-   * использование useMemo не обязательно
-   */
-  /* Готовим данные для отображения */
-  const orderInfo = useMemo(() => {
-    if (!orderData || !ingredients.length) return null;
+  const orderInfo = useMemo(
+    () => (detail.item ? buildOrderInfo(detail.item, ingredients) : null),
+    [detail.item, ingredients]
+  );
 
-    const date = new Date(orderData.createdAt);
-
-    type TIngredientsWithCount = Record<string, TIngredient & { count: number }>;
-
-    const ingredientsInfo = orderData.ingredients.reduce(
-      (acc: TIngredientsWithCount, item) => {
-        if (!acc[item]) {
-          const ingredient = ingredients.find((ing) => ing._id === item);
-          if (ingredient) {
-            acc[item] = {
-              ...ingredient,
-              count: 1,
-            };
-          }
-        } else {
-          acc[item].count++;
-        }
-
-        return acc;
-      },
-      {}
+  if (!valid) return <RequestError message="Некорректный номер заказа" />;
+  if (detail.number !== number || detail.pending) return <Preloader />;
+  if (detail.error) {
+    return (
+      <RequestError
+        message={detail.error}
+        onRetry={() => { void dispatch(fetchOrder(number)); }}
+      />
     );
-
-    const total = Object.values(ingredientsInfo).reduce(
-      (acc, item) => acc + item.price * item.count,
-      0
-    );
-
-    return {
-      ...orderData,
-      ingredientsInfo,
-      date,
-      total,
-    };
-  }, [orderData, ingredients]);
-
+  }
+  if (!detail.loaded) return <Preloader />;
   if (!orderInfo) {
-    return <Preloader />;
+    return (
+      <p role="status" className="p-6 text text_type_main-default">
+        Заказ не найден.
+      </p>
+    );
   }
 
-  return <OrderInfoUI orderInfo={orderInfo} />;
+  return (
+    <IngredientsBoundary>
+      <OrderInfoUI orderInfo={orderInfo} />
+    </IngredientsBoundary>
+  );
 };

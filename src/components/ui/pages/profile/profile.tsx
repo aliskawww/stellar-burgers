@@ -6,6 +6,8 @@ import type { ProfileUIProps } from './type';
 import styles from './profile.module.css';
 
 export const ProfileUI = ({
+  isLoading = false,
+  saved = false,
   formValue,
   isFormChanged,
   updateUserError,
@@ -21,6 +23,8 @@ export const ProfileUI = ({
       <>
         <div className="pb-6">
           <Input
+            required
+            disabled={isLoading}
             type={'text'}
             placeholder={'Имя'}
             onChange={handleInputChange}
@@ -34,6 +38,8 @@ export const ProfileUI = ({
         </div>
         <div className="pb-6">
           <Input
+            required
+            disabled={isLoading}
             type={'email'}
             placeholder={'E-mail'}
             onChange={handleInputChange}
@@ -47,6 +53,9 @@ export const ProfileUI = ({
         </div>
         <div className="pb-6">
           <Input
+            minLength={6}
+            autoComplete="new-password"
+            disabled={isLoading}
             type={'password'}
             placeholder={'Пароль'}
             onChange={handleInputChange}
@@ -65,16 +74,18 @@ export const ProfileUI = ({
               htmlType="button"
               size="medium"
               onClick={handleCancel}
+              disabled={isLoading}
             >
               Отменить
             </Button>
-            <Button type="primary" size="medium" htmlType="submit">
-              Сохранить
+            <Button type="primary" size="medium" htmlType="submit" disabled={isLoading || !formValue.name.trim() || !formValue.email.trim() || (!!formValue.password && formValue.password.length < 6)}>
+              {isLoading ? 'Сохраняем...' : 'Сохранить'}
             </Button>
           </div>
         )}
+        {saved && <p role="status" className="pt-5 text text_type_main-default">Данные сохранены</p>}
         {updateUserError && (
-          <p className={`${styles.error} pt-5 text text_type_main-default`}>
+          <p role="alert" className={`${styles.error} pt-5 text text_type_main-default`}>
             {updateUserError}
           </p>
         )}

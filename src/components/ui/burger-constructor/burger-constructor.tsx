@@ -14,6 +14,9 @@ import styles from './burger-constructor.module.css';
 export const BurgerConstructorUI = ({
   constructorItems,
   orderRequest,
+  showOrderProgress = true,
+  orderError,
+  authChecked = true,
   price,
   orderModalData,
   onOrderClick,
@@ -77,19 +80,19 @@ export const BurgerConstructorUI = ({
         <p className={`text ${styles.text} mr-2`}>{price}</p>
         <CurrencyIcon type="primary" />
       </div>
-      <Button htmlType="button" type="primary" size="large" onClick={onOrderClick}>
-        Оформить заказ
+      <Button htmlType="button" type="primary" size="large" onClick={onOrderClick} disabled={!constructorItems.bun || orderRequest || !authChecked}>
+        {orderRequest ? 'Оформляем...' : 'Оформить заказ'}
       </Button>
     </div>
-    {/* Прелоадер в данном месте в "Можно лучше" */}
-    {orderRequest && (
+    {orderError && <p role="alert" className="text text_type_main-default p-6">{orderError}</p>}
+    {orderRequest && showOrderProgress && (
       <Modal onClose={closeOrderModal} title={'Оформляем заказ...'}>
         <Preloader />
       </Modal>
     )}
 
     {orderModalData && (
-      <Modal onClose={closeOrderModal} title={orderRequest ? 'Оформляем заказ...' : ''}>
+      <Modal onClose={closeOrderModal} title="Заказ оформлен">
         <OrderDetailsUI orderNumber={orderModalData.number} />
       </Modal>
     )}
