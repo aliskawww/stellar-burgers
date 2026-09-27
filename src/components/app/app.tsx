@@ -1,9 +1,4 @@
-import {
-  AppHeader,
-  IngredientDetails,
-  Modal,
-  OrderModal,
-} from '@components';
+import { AppHeader, IngredientDetails, Modal, OrderModal } from '@components';
 import {
   ConstructorPage,
   Feed,
@@ -18,16 +13,11 @@ import {
   ResetPassword,
 } from '@pages';
 import { fetchIngredients } from '@slices/ingredientsSlice';
-import { checkAuth, sessionEnded } from '@slices/authSlice';
+import { checkAuth } from '@slices/authSlice';
 import { useEffect } from 'react';
 
 import { useDispatch } from '@services/store';
-import {
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import { ProtectedRoute } from '@components';
 
@@ -43,13 +33,8 @@ const App = (): React.JSX.Element => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const onExpired = (): void => {
-      dispatch(sessionEnded());
-    };
-    window.addEventListener('auth:expired', onExpired);
     void dispatch(checkAuth());
     void dispatch(fetchIngredients());
-    return () => window.removeEventListener('auth:expired', onExpired);
   }, [dispatch]);
 
   const location = useLocation();
@@ -57,7 +42,7 @@ const App = (): React.JSX.Element => {
   const state = location.state as ModalLocationState | null;
   const isDetailRoute =
     /^\/(ingredients\/[^/]+|feed\/[^/]+|profile\/orders\/[^/]+)\/?$/.test(
-      location.pathname,
+      location.pathname
     );
   const background = isDetailRoute ? state?.background : undefined;
 

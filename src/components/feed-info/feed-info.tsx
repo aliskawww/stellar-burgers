@@ -1,22 +1,17 @@
 import { FeedInfoUI } from '@ui';
 
-import type { TFeedState, TOrder } from '@utils-types';
+import { useSelector } from '../../services/store';
+import type { TOrder } from '@utils-types';
 
 const getOrders = (orders: TOrder[], status: string): number[] =>
   orders
     .filter((item) => item.status === status)
     .map((item) => item.number)
-    .slice(0, 20);
+    .slice(0, 15);
 
 export const FeedInfo = (): React.JSX.Element => {
-  const feed: TFeedState = {
-    orders: [],
-    total: 0,
-    totalToday: 0,
-    isLoading: false,
-    error: null,
-  };
-  const orders: TOrder[] = [];
+  const feed = useSelector((state) => state.feed);
+  const { orders } = feed;
 
   const readyOrders = getOrders(orders, 'done');
 
