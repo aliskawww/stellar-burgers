@@ -6,7 +6,7 @@ import {
   updateUserApi,
 } from '@api';
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
-import { getCookie } from '../../utils/cookie';
+import { getCookie, setCookie, deleteCookie } from '../../utils/cookie';
 
 import type { TLoginData, TRegisterData } from '@api';
 import type { TUser } from '@utils-types';
@@ -34,6 +34,16 @@ const canStart = (
   { getState }: { getState: () => Config['state'] }
 ): boolean => !getState().auth.pending;
 
+const saveTokens = (accessToken: string, refreshToken: string): void => {
+  setCookie('accessToken', accessToken);
+  localStorage.setItem('refreshToken', refreshToken);
+};
+
+const clearTokens = (): void => {
+  deleteCookie('accessToken');
+  localStorage.removeItem('refreshToken');
+};
+
 export const checkAuth = createAsyncThunk<TUser | null, void, Config>(
   'auth/check',
   async () => {
@@ -51,6 +61,7 @@ export const loginUser = createAsyncThunk<TUser, TLoginData, Config>(
   'auth/login',
   async (data) => {
     const response = await loginUserApi(data);
+    saveTokens(response.accessToken, response.refreshToken);
     return response.user;
   },
   { condition: canStart }
@@ -60,6 +71,7 @@ export const registerUser = createAsyncThunk<TUser, TRegisterData, Config>(
   'auth/register',
   async (data) => {
     const response = await registerUserApi(data);
+    saveTokens(response.accessToken, response.refreshToken);
     return response.user;
   },
   { condition: canStart }
@@ -76,7 +88,11 @@ export const updateUser = createAsyncThunk<
 export const logoutUser = createAsyncThunk<void, void, Config>(
   'auth/logout',
   async () => {
-    await logoutApi();
+    try {
+      await logoutApi();
+    } finally {
+      clearTokens();
+    }
   },
   { condition: canStart }
 );
