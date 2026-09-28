@@ -1,10 +1,12 @@
 import { ProfileOrdersUI } from '@ui-pages';
-
-import type { TOrder } from '@utils-types';
+import { useOrderPolling } from '../../hooks/use-order-polling';
+import { useDispatch, useSelector } from '../../services/store';
+import { fetchUserOrders } from '@slices/ordersSlice';
 
 export const ProfileOrders = (): React.JSX.Element => {
-  /** TODO: взять переменную из стора */
-  const orders: TOrder[] = [];
-
-  return <ProfileOrdersUI orders={orders} />;
+  const dispatch = useDispatch();
+  const history = useSelector((state) => state.orders.history);
+  useOrderPolling(true);
+  return <ProfileOrdersUI orders={history.items} isLoading={!history.loaded && !history.error}
+    error={history.error} onRetry={() => { void dispatch(fetchUserOrders()); }} />;
 };

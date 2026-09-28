@@ -10,6 +10,7 @@ import type { LoginUIProps } from './type';
 import styles from '../common.module.css';
 
 export const LoginUI = ({
+  isLoading = false,
   email,
   setEmail,
   errorText,
@@ -17,9 +18,6 @@ export const LoginUI = ({
   password,
   setPassword,
 }: LoginUIProps): React.JSX.Element => (
-  /*
-    Отображение ошибок и валидация форм в "можно лучше"
-  */
   <main className={styles.container}>
     <div className={`pt-6 ${styles.wrapCenter}`}>
       <h3 className="pb-6 text text_type_main-medium">Вход</h3>
@@ -27,6 +25,9 @@ export const LoginUI = ({
         <>
           <div className="pb-6">
             <Input
+              required
+              autoComplete="email"
+              disabled={isLoading}
               type="email"
               placeholder="E-mail"
               onChange={(e) => setEmail(e.target.value)}
@@ -42,15 +43,18 @@ export const LoginUI = ({
               onChange={(e) => setPassword(e.target.value)}
               value={password}
               name="password"
+              required
+              autoComplete="current-password"
+              disabled={isLoading}
             />
           </div>
           <div className={`pb-6 ${styles.button}`}>
-            <Button type="primary" size="medium" htmlType="submit">
-              Войти
+            <Button type="primary" size="medium" htmlType="submit" disabled={isLoading || !email.trim() || !password}>
+              {isLoading ? 'Входим...' : 'Войти'}
             </Button>
           </div>
           {errorText && (
-            <p className={`${styles.error} text text_type_main-default pb-6`}>
+            <p role="alert" className={`${styles.error} text text_type_main-default pb-6`}>
               {errorText}
             </p>
           )}

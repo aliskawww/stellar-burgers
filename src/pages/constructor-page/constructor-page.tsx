@@ -1,8 +1,10 @@
 import { BurgerIngredients, BurgerConstructor } from '@components';
+import { IngredientsBoundary } from '@components/ingredients-boundary/ingredients-boundary';
 
 import styles from './constructor-page.module.css';
 
 export const ConstructorPage = (): React.JSX.Element => (
+  <IngredientsBoundary>
   <main className={styles.containerMain}>
     <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
       Соберите бургер
@@ -12,4 +14,5 @@ export const ConstructorPage = (): React.JSX.Element => (
       <BurgerConstructor />
     </div>
   </main>
+  </IngredientsBoundary>
 );

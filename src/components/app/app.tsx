@@ -1,69 +1,98 @@
-import { AppHeader } from '@components';
-import { ConstructorPage } from '@pages';
-import { Preloader } from '@ui';
-import { Routes, Route } from 'react-router-dom';
+import { AppHeader, IngredientDetails, Modal, OrderModal } from '@components';
+import {
+  ConstructorPage,
+  Feed,
+  ForgotPassword,
+  IngredientPage,
+  Login,
+  NotFound404,
+  OrderPage,
+  Profile,
+  ProfileOrders,
+  Register,
+  ResetPassword,
+} from '@pages';
+import { fetchIngredients } from '@slices/ingredientsSlice';
+import { checkAuth } from '@slices/authSlice';
+import { useEffect } from 'react';
 
-import type { AppContentProps } from './type';
-import type { TIngredient } from '@utils-types';
+import { useDispatch } from '@services/store';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
-import '../../index.css';
+import { ProtectedRoute } from '@components';
+
+import type { Location } from 'react-router-dom';
 
 import styles from './app.module.css';
 
+type ModalLocationState = {
+  background?: Location;
+};
+
 const App = (): React.JSX.Element => {
-  const ingredients: TIngredient[] = [];
-  const isIngredientsLoading = false;
-  const ingredientsError = null;
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    void dispatch(checkAuth());
+    void dispatch(fetchIngredients());
+  }, [dispatch]);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const state = location.state as ModalLocationState | null;
+  const isDetailRoute =
+    /^\/(ingredients\/[^/]+|feed\/[^/]+|profile\/orders\/[^/]+)\/?$/.test(
+      location.pathname
+    );
+  const background = isDetailRoute ? state?.background : undefined;
+
+  const handleCloseModal = (): void => {
+    void navigate(-1);
+  };
 
   return (
     <div className={styles.app}>
       <AppHeader />
-      <AppContent
-        ingredients={ingredients}
-        isLoading={isIngredientsLoading}
-        error={ingredientsError}
-      />
+      <Routes location={background ?? location}>
+        <Route path="/" element={<ConstructorPage />} />
+        <Route path="/feed" element={<Feed />} />
+        <Route path="/ingredients/:id" element={<IngredientPage />} />
+        <Route path="/feed/:number" element={<OrderPage />} />
+        <Route element={<ProtectedRoute onlyUnAuth />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+        </Route>
+        <Route element={<ProtectedRoute />}>
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/orders" element={<ProfileOrders />} />
+          <Route path="/profile/orders/:number" element={<OrderPage />} />
+        </Route>
+        <Route path="*" element={<NotFound404 />} />
+      </Routes>
+      {background && (
+        <Routes>
+          <Route
+            path="/ingredients/:id"
+            element={
+              <Modal title="Детали ингредиента" onClose={handleCloseModal}>
+                <IngredientDetails />
+              </Modal>
+            }
+          />
+          <Route
+            path="/feed/:number"
+            element={<OrderModal onClose={handleCloseModal} />}
+          />
+          <Route
+            path="/profile/orders/:number"
+            element={<OrderModal onClose={handleCloseModal} />}
+          />
+        </Routes>
+      )}
     </div>
   );
 };
 
 export default App;
-
-/* Маршруты показываются только когда ингредиенты загружены: без них не
-   отрисовать ни конструктор, ни состав заказа. */
-const AppContent = ({
-  ingredients,
-  isLoading,
-  error,
-}: AppContentProps): React.JSX.Element => {
-  if (isLoading) {
-    return <Preloader />;
-  }
-
-  if (error) {
-    return (
-      <p className={`${styles.message} text text_type_main-medium`}>
-        Не удалось загрузить ингредиенты
-        {error.message ? `: ${error.message}` : '.'}
-      </p>
-    );
-  }
-
-  if (!ingredients.length) {
-    return (
-      <p className={`${styles.message} text text_type_main-medium`}>Нет ингредиентов</p>
-    );
-  }
-
-  return <RouteComponent />;
-};
-
-const RouteComponent = (): React.JSX.Element => {
-  return (
-    <>
-      <Routes>
-        <Route path="/" element={<ConstructorPage />} />
-      </Routes>
-    </>
-  );
-};

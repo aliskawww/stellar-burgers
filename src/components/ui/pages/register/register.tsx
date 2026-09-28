@@ -10,6 +10,7 @@ import type { RegisterUIProps } from './type';
 import styles from '../common.module.css';
 
 export const RegisterUI = ({
+  isLoading = false,
   errorText,
   email,
   setEmail,
@@ -29,6 +30,9 @@ export const RegisterUI = ({
         <>
           <div className="pb-6">
             <Input
+              required
+              autoComplete="name"
+              disabled={isLoading}
               type="text"
               placeholder="Имя"
               onChange={(e) => setUserName(e.target.value)}
@@ -41,6 +45,9 @@ export const RegisterUI = ({
           </div>
           <div className="pb-6">
             <Input
+              required
+              autoComplete="email"
+              disabled={isLoading}
               type="email"
               placeholder="E-mail"
               onChange={(e) => setEmail(e.target.value)}
@@ -56,15 +63,19 @@ export const RegisterUI = ({
               onChange={(e) => setPassword(e.target.value)}
               value={password}
               name="password"
+              required
+              minLength={6}
+              autoComplete="new-password"
+              disabled={isLoading}
             />
           </div>
           <div className={`pb-6 ${styles.button}`}>
-            <Button type="primary" size="medium" htmlType="submit">
-              Зарегистрироваться
+            <Button type="primary" size="medium" htmlType="submit" disabled={isLoading || !userName.trim() || !email.trim() || password.length < 6}>
+              {isLoading ? 'Регистрируем...' : 'Зарегистрироваться'}
             </Button>
           </div>
           {errorText && (
-            <p className={`${styles.error} text text_type_main-default pb-6`}>
+            <p role="alert" className={`${styles.error} text text_type_main-default pb-6`}>
               {errorText}
             </p>
           )}
