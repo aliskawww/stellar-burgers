@@ -70,12 +70,22 @@ export const RegisterUI = ({
             />
           </div>
           <div className={`pb-6 ${styles.button}`}>
-            <Button type="primary" size="medium" htmlType="submit" disabled={isLoading || !userName.trim() || !email.trim() || password.length < 6}>
+            <Button
+              type="primary"
+              size="medium"
+              htmlType="submit"
+              disabled={
+                isLoading || !userName.trim() || !email.trim() || password.length < 6
+              }
+            >
               {isLoading ? 'Регистрируем...' : 'Зарегистрироваться'}
             </Button>
           </div>
           {errorText && (
-            <p role="alert" className={`${styles.error} text text_type_main-default pb-6`}>
+            <p
+              role="alert"
+              className={`${styles.error} text text_type_main-default pb-6`}
+            >
               {errorText}
             </p>
           )}

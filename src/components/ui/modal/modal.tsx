@@ -1,10 +1,10 @@
-import { CloseIcon } from "@krgaa/react-developer-burger-ui-components";
-import { ModalOverlayUI } from "@ui";
-import { memo } from "react";
+import { CloseIcon } from '@krgaa/react-developer-burger-ui-components';
+import { ModalOverlayUI } from '@ui';
+import { memo } from 'react';
 
-import type { TModalUIProps } from "./type";
+import type { TModalUIProps } from './type';
 
-import styles from "./modal.module.css";
+import styles from './modal.module.css';
 
 export const ModalUI = memo(function ModalUI({
   title,
@@ -13,12 +13,7 @@ export const ModalUI = memo(function ModalUI({
 }: TModalUIProps): React.JSX.Element {
   return (
     <>
-      <div
-        className={styles.modal}
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-      >
+      <div className={styles.modal} role="dialog" aria-modal="true" aria-label={title}>
         <div className={styles.header}>
           <h3 className="text text_type_main-large">{title}</h3>
           <button

@@ -1,8 +1,9 @@
+import { selectIngredients } from '@selectors';
+import { fetchOrder } from '@slices/ordersSlice';
 import { Preloader, OrderInfoUI } from '@ui';
 import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchOrder } from '@slices/ordersSlice';
-import { selectIngredients } from '@selectors';
+
 import { useDispatch, useSelector } from '../../services/store';
 import { buildOrderInfo } from '../../utils/order-info';
 import { IngredientsBoundary } from '../ingredients-boundary/ingredients-boundary';
@@ -31,7 +32,9 @@ export const OrderInfo = (): React.JSX.Element => {
     return (
       <RequestError
         message={detail.error}
-        onRetry={() => { void dispatch(fetchOrder(number)); }}
+        onRetry={() => {
+          void dispatch(fetchOrder(number));
+        }}
       />
     );
   }

@@ -1,4 +1,10 @@
-import { AppHeader, IngredientDetails, Modal, OrderModal } from '@components';
+import {
+  AppHeader,
+  IngredientDetails,
+  Modal,
+  OrderModal,
+  ProtectedRoute,
+} from '@components';
 import {
   ConstructorPage,
   Feed,
@@ -12,14 +18,12 @@ import {
   Register,
   ResetPassword,
 } from '@pages';
-import { fetchIngredients } from '@slices/ingredientsSlice';
 import { checkAuth } from '@slices/authSlice';
+import { fetchIngredients } from '@slices/ingredientsSlice';
 import { useEffect } from 'react';
-
-import { useDispatch } from '@services/store';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
-import { ProtectedRoute } from '@components';
+import { useDispatch } from '@services/store';
 
 import type { Location } from 'react-router-dom';
 

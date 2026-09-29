@@ -78,12 +78,26 @@ export const ProfileUI = ({
             >
               Отменить
             </Button>
-            <Button type="primary" size="medium" htmlType="submit" disabled={isLoading || !formValue.name.trim() || !formValue.email.trim() || (!!formValue.password && formValue.password.length < 6)}>
+            <Button
+              type="primary"
+              size="medium"
+              htmlType="submit"
+              disabled={
+                isLoading ||
+                !formValue.name.trim() ||
+                !formValue.email.trim() ||
+                (!!formValue.password && formValue.password.length < 6)
+              }
+            >
               {isLoading ? 'Сохраняем...' : 'Сохранить'}
             </Button>
           </div>
         )}
-        {saved && <p role="status" className="pt-5 text text_type_main-default">Данные сохранены</p>}
+        {saved && (
+          <p role="status" className="pt-5 text text_type_main-default">
+            Данные сохранены
+          </p>
+        )}
         {updateUserError && (
           <p role="alert" className={`${styles.error} pt-5 text text_type_main-default`}>
             {updateUserError}

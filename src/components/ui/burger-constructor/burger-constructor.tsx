@@ -80,11 +80,21 @@ export const BurgerConstructorUI = ({
         <p className={`text ${styles.text} mr-2`}>{price}</p>
         <CurrencyIcon type="primary" />
       </div>
-      <Button htmlType="button" type="primary" size="large" onClick={onOrderClick} disabled={!constructorItems.bun || orderRequest || !authChecked}>
+      <Button
+        htmlType="button"
+        type="primary"
+        size="large"
+        onClick={onOrderClick}
+        disabled={!constructorItems.bun || orderRequest || !authChecked}
+      >
         {orderRequest ? 'Оформляем...' : 'Оформить заказ'}
       </Button>
     </div>
-    {orderError && <p role="alert" className="text text_type_main-default p-6">{orderError}</p>}
+    {orderError && (
+      <p role="alert" className="text text_type_main-default p-6">
+        {orderError}
+      </p>
+    )}
     {orderRequest && showOrderProgress && (
       <Modal onClose={closeOrderModal} title={'Оформляем заказ...'}>
         <Preloader />

@@ -5,6 +5,16 @@ const config: Config = {
   testEnvironment: 'node',
   roots: ['<rootDir>/src'],
   testMatch: ['**/*.test.ts'],
+  clearMocks: true,
+  collectCoverageFrom: [
+    'src/services/slices/ingredientsSlice.ts',
+    'src/services/slices/constructorSlice.ts',
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'html', 'lcov'],
+  coverageThreshold: {
+    global: { branches: 100, functions: 100, lines: 100, statements: 100 },
+  },
   moduleNameMapper: {
     '^@api$': '<rootDir>/src/utils/burger-api',
     '^@api/(.*)$': '<rootDir>/src/utils/burger-api/$1',
@@ -34,10 +44,13 @@ const config: Config = {
     '^@ui-pages/(.*)$': '<rootDir>/src/components/ui/pages/$1',
   },
   transform: {
-    '^.+\\.tsx?$': ['ts-jest', {
-      tsconfig: 'tsconfig.test.json',
-      diagnostics: false,
-    }],
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.test.json',
+        diagnostics: true,
+      },
+    ],
   },
 };
 
