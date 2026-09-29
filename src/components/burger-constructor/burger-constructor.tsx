@@ -1,9 +1,9 @@
 import { selectConstructorItems, selectConstructorPrice } from '@selectors';
+import { closeOrder, createOrder } from '@slices/ordersSlice';
 import { BurgerConstructorUI } from '@ui';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from '../../services/store';
-import { closeOrder, createOrder } from '@slices/ordersSlice';
-import { useLocation, useNavigate } from 'react-router-dom';
 
 export const BurgerConstructor = (): React.JSX.Element | null => {
   const constructorItems = useSelector(selectConstructorItems);
@@ -18,7 +18,10 @@ export const BurgerConstructor = (): React.JSX.Element | null => {
 
   const onOrderClick = (): void => {
     if (!constructorItems.bun || orderRequest || !checked) return;
-    if (!user) { void navigate('/login', { state: { from: location } }); return; }
+    if (!user) {
+      void navigate('/login', { state: { from: location } });
+      return;
+    }
     void dispatch(createOrder());
   };
 

@@ -5,8 +5,9 @@ import type { TConstructorState, TIngredient } from '@utils-types';
 
 export const selectIngredients = (state: RootState): TIngredient[] =>
   state.ingredients.items;
-export const selectIngredientsStatus = (state: RootState): RootState['ingredients']['status'] =>
-  state.ingredients.status;
+export const selectIngredientsStatus = (
+  state: RootState
+): RootState['ingredients']['status'] => state.ingredients.status;
 export const selectIngredientsError = (state: RootState): string | null =>
   state.ingredients.error;
 export const selectConstructorItems = (state: RootState): TConstructorState =>

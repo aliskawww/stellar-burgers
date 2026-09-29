@@ -1,7 +1,11 @@
 import { createSlice, nanoid } from '@reduxjs/toolkit';
 
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { TConstructorIngredient, TConstructorState, TIngredient } from '@utils-types';
+import type {
+  TConstructorIngredient,
+  TConstructorState,
+  TIngredient,
+} from '@utils-types';
 
 const initialState: TConstructorState = {
   bun: null,

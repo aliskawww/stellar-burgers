@@ -1,7 +1,8 @@
+import { clearAuthError, registerUser } from '@slices/authSlice';
 import { RegisterUI } from '@ui-pages';
 import { type SyntheticEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { clearAuthError, registerUser } from '@slices/authSlice';
+
 import { useDispatch, useSelector } from '@services/store';
 
 export const Register = (): React.JSX.Element => {

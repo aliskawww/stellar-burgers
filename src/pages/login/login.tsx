@@ -1,8 +1,10 @@
+import { clearAuthError, loginUser } from '@slices/authSlice';
 import { LoginUI } from '@ui-pages';
 import { type SyntheticEvent, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { clearAuthError, loginUser } from '@slices/authSlice';
+
 import { useDispatch, useSelector } from '@services/store';
+
 import type { Location } from 'react-router-dom';
 
 type FromState = { from?: Location };
@@ -23,9 +25,12 @@ export const Login = (): React.JSX.Element => {
     if (!user) return;
     const state = location.state as FromState | null;
     const from = state?.from;
-    const safe = from?.pathname.startsWith('/') &&
+    const safe =
+      from?.pathname.startsWith('/') &&
       !from.pathname.startsWith('//') &&
-      !['/login', '/register', '/forgot-password', '/reset-password'].includes(from.pathname);
+      !['/login', '/register', '/forgot-password', '/reset-password'].includes(
+        from.pathname
+      );
     void navigate(safe && from ? from.pathname : '/', { replace: true });
   }, [user, location.state, navigate]);
 

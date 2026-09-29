@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
 import { fetchFeed } from '@slices/feedSlice';
 import { fetchUserOrders } from '@slices/ordersSlice';
+import { useEffect } from 'react';
+
 import { useDispatch } from '../services/store';
 
 export const useOrderPolling = (personal = false): void => {
@@ -15,7 +16,7 @@ export const useOrderPolling = (personal = false): void => {
     const timer = window.setInterval(refresh, 15000);
     document.addEventListener('visibilitychange', refresh);
     window.addEventListener('online', refresh);
-    return () => {
+    return (): void => {
       window.clearInterval(timer);
       document.removeEventListener('visibilitychange', refresh);
       window.removeEventListener('online', refresh);

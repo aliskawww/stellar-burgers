@@ -1,6 +1,7 @@
-import { useParams } from 'react-router-dom';
-import clsx from 'clsx';
 import { OrderInfo } from '@components';
+import { clsx } from 'clsx';
+import { useParams } from 'react-router-dom';
+
 import styles from './order-page.module.css';
 
 export const OrderPage = (): React.JSX.Element => {

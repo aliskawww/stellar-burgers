@@ -1,5 +1,5 @@
-import { useParams } from 'react-router-dom';
 import { Modal, OrderInfo } from '@components';
+import { useParams } from 'react-router-dom';
 
 type OrderModalProps = { onClose: () => void };
 

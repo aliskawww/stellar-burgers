@@ -1,6 +1,5 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-
 import { Preloader } from '@ui';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 import { useSelector } from '../../services/store';
 

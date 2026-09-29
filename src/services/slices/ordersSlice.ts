@@ -1,7 +1,9 @@
 import { getOrderByNumberApi, getOrdersApi, orderBurgerApi } from '@api';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { clearConstructor } from './constructorSlice';
+
 import { logoutUser } from './authSlice';
+import { clearConstructor } from './constructorSlice';
+
 import type { AuthState } from './authSlice';
 import type { TConstructorState, TOrder } from '@utils-types';
 
@@ -21,7 +23,11 @@ const initialState: OrdersState = {
   creation: { ...requestState, item: null, visible: false },
 };
 
-type State = { orders: OrdersState; auth: AuthState; burgerConstructor: TConstructorState };
+type State = {
+  orders: OrdersState;
+  auth: AuthState;
+  burgerConstructor: TConstructorState;
+};
 
 export const fetchUserOrders = createAsyncThunk<TOrder[], void, { state: State }>(
   'orders/history',

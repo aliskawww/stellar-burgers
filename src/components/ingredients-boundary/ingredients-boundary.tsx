@@ -33,7 +33,9 @@ export const IngredientsBoundary = ({
           htmlType="button"
           type="primary"
           size="medium"
-          onClick={() => { void dispatch(fetchIngredients()); }}
+          onClick={() => {
+            void dispatch(fetchIngredients());
+          }}
         >
           Повторить загрузку
         </Button>

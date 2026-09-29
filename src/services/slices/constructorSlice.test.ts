@@ -138,7 +138,9 @@ describe('constructorSlice', () => {
     const store = configureStore({ reducer: rootReducer });
     expect(selectConstructorPrice(store.getState())).toBe(0);
     expect(selectIngredientCounters(store.getState())).toEqual({});
-    [bun, filling, filling, sauce].forEach((item) => store.dispatch(addIngredient(item)));
+    [bun, filling, filling, sauce].forEach((item) =>
+      store.dispatch(addIngredient(item))
+    );
     expect(selectConstructorPrice(store.getState())).toBe(320);
     expect(selectIngredientCounters(store.getState())).toEqual({
       'bun-1': 2,

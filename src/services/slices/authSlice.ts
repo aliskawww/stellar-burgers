@@ -6,6 +6,7 @@ import {
   updateUserApi,
 } from '@api';
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
+
 import { getCookie, setCookie, deleteCookie } from '../../utils/cookie';
 
 import type { TLoginData, TRegisterData } from '@api';
@@ -77,13 +78,13 @@ export const registerUser = createAsyncThunk<TUser, TRegisterData, Config>(
   { condition: canStart }
 );
 
-export const updateUser = createAsyncThunk<
-  TUser,
-  Partial<TRegisterData>,
-  Config
->('auth/update', async (data) => (await updateUserApi(data)).user, {
-  condition: canStart,
-});
+export const updateUser = createAsyncThunk<TUser, Partial<TRegisterData>, Config>(
+  'auth/update',
+  async (data) => (await updateUserApi(data)).user,
+  {
+    condition: canStart,
+  }
+);
 
 export const logoutUser = createAsyncThunk<void, void, Config>(
   'auth/logout',
