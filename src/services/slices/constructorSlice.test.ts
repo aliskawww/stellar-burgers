@@ -15,15 +15,49 @@ import type { TConstructorState } from '@utils-types';
 
 const empty: TConstructorState = { bun: null, ingredients: [] };
 
-const makeFilledState = (): TConstructorState =>
-  [filling, sauce, filling].reduce(
-    (state, ingredient) => constructorReducer(state, addIngredient(ingredient)),
-    empty
-  );
+const makeFilledState = (): TConstructorState => ({
+  bun: null,
+  ingredients: [
+    { ...filling, id: 'filling-instance-1' },
+    { ...sauce, id: 'sauce-instance-1' },
+    { ...filling, id: 'filling-instance-2' },
+  ],
+});
 
 describe('constructorSlice', () => {
   test('возвращает начальное состояние для неизвестного экшена', () => {
-    expect(constructorReducer(undefined, { type: 'unknown' })).toEqual(empty);
+    expect(constructorReducer(undefined, { type: 'UNKNOWN' })).toEqual(empty);
+  });
+
+  test('неизвестный экшен сохраняет существующее состояние', () => {
+    const state = makeFilledState();
+    expect(constructorReducer(state, { type: 'UNKNOWN' })).toBe(state);
+  });
+
+  test.each([filling, sauce])(
+    'addIngredient добавляет $name в конец, сохраняя булку',
+    (ingredient) => {
+      const state = {
+        ...makeFilledState(),
+        bun: { ...bun, id: 'bun-instance' },
+      };
+      const action = addIngredient(ingredient);
+      expect(constructorReducer(state, action)).toEqual({
+        bun: state.bun,
+        ingredients: [...state.ingredients, action.payload],
+      });
+      expect(state.ingredients).toHaveLength(3);
+    }
+  );
+
+  test('addIngredient устанавливает булку и сохраняет начинки', () => {
+    const state = makeFilledState();
+    const action = addIngredient(bun);
+    expect(constructorReducer(state, action)).toEqual({
+      bun: action.payload,
+      ingredients: state.ingredients,
+    });
+    expect(state.bun).toBeNull();
   });
 
   test('булка заменяет предыдущую и не попадает в начинку', () => {
@@ -41,15 +75,17 @@ describe('constructorSlice', () => {
     expect(first.payload.id).not.toBe(second.payload.id);
     expect(filling).not.toHaveProperty('id');
     const state = constructorReducer(constructorReducer(undefined, first), second);
-    expect(state.ingredients).toHaveLength(2);
-    expect(constructorReducer(undefined, first)).toEqual(
-      constructorReducer(undefined, first)
-    );
+    expect(state.ingredients).toEqual([first.payload, second.payload]);
+    expect(first.payload.id).toEqual(expect.any(String));
+    expect(first.payload.id.length).toBeGreaterThan(0);
   });
 
   test('удаляет только выбранный экземпляр и не изменяет прежнее состояние', () => {
     const previous = makeFilledState();
-    const next = constructorReducer(previous, removeIngredient(previous.ingredients[0].id));
+    const next = constructorReducer(
+      previous,
+      removeIngredient(previous.ingredients[0].id)
+    );
     expect(next.ingredients).toEqual(previous.ingredients.slice(1));
     expect(previous.ingredients).toHaveLength(3);
     expect(constructorReducer(next, removeIngredient('missing'))).toEqual(next);
@@ -58,18 +94,39 @@ describe('constructorSlice', () => {
   test.each(['up', 'down'] as const)('перемещает экземпляр %s', (direction) => {
     const previous = makeFilledState();
     const moving = previous.ingredients[1];
-    const next = constructorReducer(previous, moveIngredient({ id: moving.id, direction }));
-    expect(next.ingredients[direction === 'up' ? 0 : 2]).toEqual(moving);
+    const next = constructorReducer(
+      previous,
+      moveIngredient({ id: moving.id, direction })
+    );
+    expect(next.ingredients).toEqual(
+      direction === 'up'
+        ? [previous.ingredients[1], previous.ingredients[0], previous.ingredients[2]]
+        : [previous.ingredients[0], previous.ingredients[2], previous.ingredients[1]]
+    );
     expect(previous.ingredients[1]).toEqual(moving);
     expect(next.ingredients).toHaveLength(3);
   });
 
   test('игнорирует выход за границы и неизвестные ID', () => {
     const state = makeFilledState();
-    expect(constructorReducer(state, moveIngredient({ id: state.ingredients[0].id, direction: 'up' }))).toEqual(state);
-    expect(constructorReducer(state, moveIngredient({ id: state.ingredients[2].id, direction: 'down' }))).toEqual(state);
-    expect(constructorReducer(state, moveIngredient({ id: 'missing', direction: 'down' }))).toEqual(state);
-    expect(constructorReducer(empty, moveIngredient({ id: 'missing', direction: 'up' }))).toEqual(empty);
+    expect(
+      constructorReducer(
+        state,
+        moveIngredient({ id: state.ingredients[0].id, direction: 'up' })
+      )
+    ).toEqual(state);
+    expect(
+      constructorReducer(
+        state,
+        moveIngredient({ id: state.ingredients[2].id, direction: 'down' })
+      )
+    ).toEqual(state);
+    expect(
+      constructorReducer(state, moveIngredient({ id: 'missing', direction: 'down' }))
+    ).toEqual(state);
+    expect(
+      constructorReducer(empty, moveIngredient({ id: 'missing', direction: 'up' }))
+    ).toEqual(empty);
   });
 
   test('очищает булку и начинку', () => {
@@ -83,7 +140,11 @@ describe('constructorSlice', () => {
     expect(selectIngredientCounters(store.getState())).toEqual({});
     [bun, filling, filling, sauce].forEach((item) => store.dispatch(addIngredient(item)));
     expect(selectConstructorPrice(store.getState())).toBe(320);
-    expect(selectIngredientCounters(store.getState())).toEqual({ 'bun-1': 2, 'filling-1': 2, 'sauce-1': 1 });
+    expect(selectIngredientCounters(store.getState())).toEqual({
+      'bun-1': 2,
+      'filling-1': 2,
+      'sauce-1': 1,
+    });
     const counters = selectIngredientCounters(store.getState());
     expect(selectIngredientCounters(store.getState())).toBe(counters);
     store.dispatch(addIngredient({ ...bun, _id: 'bun-2', price: 150 }));

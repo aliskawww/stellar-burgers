@@ -1,4 +1,6 @@
 export * from './constructor-page';
+export * from './ingredient-page';
+export * from './order-page';
 export * from './feed';
 export * from './forgot-password';
 export * from './login';
@@ -7,5 +9,3 @@ export * from './profile';
 export * from './profile-orders';
 export * from './register';
 export * from './reset-password';
-export * from './ingredient-page/ingredient-page';
-export * from './order-page/order-page';
